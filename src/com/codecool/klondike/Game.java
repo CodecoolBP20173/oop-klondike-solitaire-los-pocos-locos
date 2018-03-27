@@ -12,8 +12,10 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import sun.text.resources.et.CollationData_et;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -78,7 +80,7 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
-        //TODO
+        //TODO onMouseReleasedHandler
         if (pile != null) {
             handleValidMove(card, pile);
         } else {
@@ -88,7 +90,7 @@ public class Game extends Pane {
     };
 
     public boolean isGameWon() {
-        //TODO
+        //TODO isGameWon
         return false;
     }
 
@@ -106,12 +108,12 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
+        //TODO refillStockFromDiscard
         System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
+        //TODO isMoveValid
         return true;
     }
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
@@ -181,8 +183,9 @@ public class Game extends Pane {
     }
 
     public void dealCards() {
+        Collections.shuffle(deck);
         Iterator<Card> deckIterator = deck.iterator();
-        //TODO
+        //TODO deal card
         deckIterator.forEachRemaining(card -> {
             stockPile.addCard(card);
             addMouseEventHandlers(card);
