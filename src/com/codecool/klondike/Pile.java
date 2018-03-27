@@ -52,6 +52,12 @@ public class Pile extends Pane {
         //TODO clear
     }
 
+    public void addCards(List<Card> cards) {
+        for (Card card : cards) {
+            this.addCard(card);
+        }
+    }
+
     public void addCard(Card card) {
         cards.add(card);
         card.setContainingPile(this);
