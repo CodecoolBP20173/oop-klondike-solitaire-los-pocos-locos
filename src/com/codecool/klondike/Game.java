@@ -1,5 +1,6 @@
 package com.codecool.klondike;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
@@ -83,8 +84,11 @@ public class Game extends Pane {
         Pile foundationPile = getValidIntersectingPile(card, foundationPiles);
 
         //TODO onMouseReleasedHandler
-        moveCard(card, tableauPile);
-        moveCard(card, foundationPile);
+        if (foundationPile == null) {
+            moveCard(card, tableauPile);
+        } else {
+            moveCard(card, foundationPile);
+        }
     };
 
     private void moveCard(Card card, Pile pile) {
@@ -98,14 +102,17 @@ public class Game extends Pane {
             }
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
-            // draggedCards = null;
             draggedCards.clear();
         }
     }
 
     public boolean isGameWon() {
-        //TODO isGameWon
-        return false;
+        for (Pile pile : foundationPiles) {
+            if (pile.numOfCards() != 13) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Game() {
@@ -123,12 +130,18 @@ public class Game extends Pane {
 
     public void refillStockFromDiscard() {
         //TODO refillStockFromDiscard
+        List<Card> cards = discardPile.getCards();
+        Collections.reverse(cards);
+        for (Card card : cards) {
+            card.flip();
+        }
+        stockPile.addCards(cards);
+        discardPile.clear();
         System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        System.out.println(destPile.getPileType());
-        if (destPile.getPileType().equals("FOUNDATION")) {
+        if (destPile.getPileType().equals(foundationPiles.get(0).getPileType())) {
             if (destPile.isEmpty()){
                     return (card.getRank() == 1);
             }
