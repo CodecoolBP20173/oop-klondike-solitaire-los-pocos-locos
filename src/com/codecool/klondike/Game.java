@@ -85,7 +85,7 @@ public class Game extends Pane {
             handleValidMove(card, pile);
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards = null;
+            //draggedCards = null;
         }
     };
 
@@ -195,11 +195,13 @@ public class Game extends Pane {
                 Card card = deckIterator.next();
                 tableau.addCard(card);
                 addMouseEventHandlers(card);
+                if (i == tableauSize - 1) {
+                    card.flip();
+                }
                 getChildren().add(card);
             }
             tableauSize++;
         }
-
 
 
         deckIterator.forEachRemaining(card -> {
