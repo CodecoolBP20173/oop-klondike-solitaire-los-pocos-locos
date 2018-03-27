@@ -111,6 +111,9 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
+        // colorcheck, foundation - same suit+color, tableou - opposite color
+        // numbers descending/ascending
+        //ace / king on first position
         //TODO
         return true;
     }
