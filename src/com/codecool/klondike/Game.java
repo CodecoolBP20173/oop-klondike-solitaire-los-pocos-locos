@@ -83,8 +83,11 @@ public class Game extends Pane {
         Pile foundationPile = getValidIntersectingPile(card, foundationPiles);
 
         //TODO onMouseReleasedHandler
-        moveCard(card, tableauPile);
-        moveCard(card, foundationPile);
+        if (foundationPile == null) {
+            moveCard(card, tableauPile);
+        } else {
+            moveCard(card, foundationPile);
+        }
     };
 
     private void moveCard(Card card, Pile pile) {
