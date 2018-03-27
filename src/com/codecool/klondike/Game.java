@@ -127,25 +127,22 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
+        System.out.println(destPile.getPileType());
         if (destPile.getPileType().equals("FOUNDATION")) {
             if (destPile.isEmpty()){
                     return (card.getRank() == 1);
-
             }
             else
                 return (destPile.getTopCard().getRank() == card.getRank() -1 && destPile.getTopCard().getSuit() == card.getSuit());
-
 
         }
         else if (destPile.getPileType().equals(tableauPiles.get(0).getPileType())){
             if (destPile.isEmpty())
                 return (card.getRank() == 13);
 
-
             else
                 return (destPile.getTopCard().getRank() == card.getRank() +1 && Card.isOppositeColor(destPile.getTopCard(), card));
-
-
+            
             }
             return false;
         }
