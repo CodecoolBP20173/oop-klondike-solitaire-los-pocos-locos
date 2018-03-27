@@ -12,7 +12,6 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
-import sun.text.resources.et.CollationData_et;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,9 +79,14 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
+
         //TODO onMouseReleasedHandler
         if (pile != null) {
             handleValidMove(card, pile);
+            List<Card> cards = card.getContainingPile().getCards();
+            Card lastNonFlippedCard = cards.get(cards.size() - 2);
+            if (lastNonFlippedCard.isFaceDown())
+                lastNonFlippedCard.flip();
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
             //draggedCards = null;
