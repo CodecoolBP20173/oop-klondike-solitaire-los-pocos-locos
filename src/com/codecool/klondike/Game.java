@@ -12,6 +12,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import sun.font.TrueTypeFont;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -111,12 +112,29 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        // colorcheck, foundation - same suit+color, tableou - opposite color
-        // numbers descending/ascending
-        //ace / king on first position
-        //TODO
-        return true;
+        if (destPile == foundationPiles) {
+            if (destPile.isEmpty()){
+                if (card.getRank() == 1){
+                    return true;
+                }
+            }
+            else if (destPile.getTopCard().getRank() == card.getRank() -1 && destPile.getTopCard().getSuit() == card.getSuit()){
+                return true;
+            }
+        }
+        else if (destPile == tableauPiles){
+            if (destPile.isEmpty()){
+                if(card.getRank() == 13) {
+                    return true;
+                }
+            else if (destPile.getTopCard().getRank() == card.getRank() +1 && Card.isOppositeColor(destPile.getTopCard(), card)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
+    
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
