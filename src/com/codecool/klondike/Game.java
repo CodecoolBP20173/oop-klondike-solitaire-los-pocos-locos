@@ -84,7 +84,8 @@ public class Game extends Pane {
             handleValidMove(card, pile);
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards = null;
+            // draggedCards = null;
+            draggedCards.clear();
         }
     };
 
@@ -112,29 +113,31 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        if (destPile == foundationPiles) {
+        System.out.println(destPile.getPileType());
+        if (destPile.getPileType().equals("FOUNDATION")) {
             if (destPile.isEmpty()){
-                if (card.getRank() == 1){
-                    return true;
-                }
+                    return (card.getRank() == 1);
+
             }
-            else if (destPile.getTopCard().getRank() == card.getRank() -1 && destPile.getTopCard().getSuit() == card.getSuit()){
-                return true;
-            }
+            else
+                return (destPile.getTopCard().getRank() == card.getRank() -1 && destPile.getTopCard().getSuit() == card.getSuit());
+
+
         }
-        else if (destPile == tableauPiles){
-            if (destPile.isEmpty()){
-                if(card.getRank() == 13) {
-                    return true;
-                }
-            else if (destPile.getTopCard().getRank() == card.getRank() +1 && Card.isOppositeColor(destPile.getTopCard(), card)){
-                    return true;
-                }
+        else if (destPile.getPileType().equals(tableauPiles.get(0).getPileType())){
+            if (destPile.isEmpty())
+                return (card.getRank() == 13);
+
+
+            else
+                return (destPile.getTopCard().getRank() == card.getRank() +1 && Card.isOppositeColor(destPile.getTopCard(), card));
+
+
             }
+            return false;
         }
-        return false;
-    }
-    
+
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
