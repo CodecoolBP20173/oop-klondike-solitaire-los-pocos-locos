@@ -14,6 +14,7 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,18 +78,31 @@ public class Game extends Pane {
         if (draggedCards.isEmpty())
             return;
         Card card = (Card) e.getSource();
-        Pile pile = getValidIntersectingPile(card, tableauPiles);
-        //TODO
-        if (pile != null) {
-            handleValidMove(card, pile);
-        } else {
-            draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards = null;
-        }
+        Pile tableauPile = getValidIntersectingPile(card, tableauPiles);
+        Pile foundationPile = getValidIntersectingPile(card, foundationPiles);
+
+        //TODO onMouseReleasedHandler
+        moveCard(card, tableauPile);
+        moveCard(card, foundationPile);
     };
 
+    private void moveCard(Card card, Pile pile) {
+        if (pile != null) {
+            handleValidMove(card, pile);
+            List<Card> cards = card.getContainingPile().getCards();
+            if (cards.size() > 1) {
+                Card lastNonFlippedCard = cards.get(cards.size() - 2);
+                if (lastNonFlippedCard.isFaceDown())
+                    lastNonFlippedCard.flip();
+            }
+        } else {
+            draggedCards.forEach(MouseUtil::slideBack);
+            //draggedCards = null;
+        }
+    }
+
     public boolean isGameWon() {
-        //TODO
+        //TODO isGameWon
         return false;
     }
 
@@ -106,14 +120,15 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
+        //TODO refillStockFromDiscard
         System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
+        //TODO isMoveValid
         return true;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
@@ -181,8 +196,26 @@ public class Game extends Pane {
     }
 
     public void dealCards() {
+        Collections.shuffle(deck);
         Iterator<Card> deckIterator = deck.iterator();
-        //TODO
+        Iterator<Pile> tableauIterator = tableauPiles.iterator();
+        //TODO deal card
+        int tableauSize = 1;
+        while (tableauIterator.hasNext()) {
+            Pile tableau = tableauIterator.next();
+            for (int i = 0; i < tableauSize; i++) {
+                Card card = deckIterator.next();
+                tableau.addCard(card);
+                addMouseEventHandlers(card);
+                if (i == tableauSize - 1) {
+                    card.flip();
+                }
+                getChildren().add(card);
+            }
+            tableauSize++;
+        }
+
+
         deckIterator.forEachRemaining(card -> {
             stockPile.addCard(card);
             addMouseEventHandlers(card);

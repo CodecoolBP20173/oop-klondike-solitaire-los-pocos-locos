@@ -40,7 +40,7 @@ public class Pile extends Pane {
     }
 
     public int numOfCards() {
-        //TODO
+        //TODO numOfCards
         return 1;
     }
 
@@ -49,7 +49,7 @@ public class Pile extends Pane {
     }
 
     public void clear() {
-        //TODO
+        //TODO clear
     }
 
     public void addCard(Card card) {
