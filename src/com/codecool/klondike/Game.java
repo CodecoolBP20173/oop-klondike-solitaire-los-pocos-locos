@@ -124,7 +124,7 @@ public class Game extends Pane {
 
     public boolean isGameWon() {
         for (Pile pile : foundationPiles) {
-            if (pile.numOfCards() != 1) {
+            if (pile.numOfCards() != 13) {
                 return false;
             }
         }
@@ -135,6 +135,7 @@ public class Game extends Pane {
         deck = Card.createNewDeck();
         initPiles();
         dealCards();
+
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -229,6 +230,7 @@ public class Game extends Pane {
             foundationPile.setLayoutX(610 + i * 180);
             foundationPile.setLayoutY(20);
             foundationPiles.add(foundationPile);
+
             foundationPile.getCards().addListener((ListChangeListener<Card>) (e -> {
                 if (isGameWon()) {
                     Platform.runLater(() -> {
@@ -237,6 +239,8 @@ public class Game extends Pane {
                         alert.setHeaderText(null);
                         alert.setContentText("You Have Won !!!");
                         alert.showAndWait();
+                        //removes all cards
+                        //getChildren().remove(13,65);
                         System.exit(-1);
                     });
                 }
