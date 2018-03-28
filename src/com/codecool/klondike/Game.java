@@ -1,6 +1,7 @@
 package com.codecool.klondike;
 
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
@@ -84,13 +85,13 @@ public class Game extends Pane {
         Card card = (Card) e.getSource();
         Pile tableauPile = getValidIntersectingPile(card, tableauPiles);
         Pile foundationPile = getValidIntersectingPile(card, foundationPiles);
-
-        //TODO onMouseReleasedHandler
         if (foundationPile == null) {
             moveCard(card, tableauPile);
         } else {
             moveCard(card, foundationPile);
         }
+
+
     };
 
     private void moveCard(Card card, Pile pile) {
@@ -110,7 +111,7 @@ public class Game extends Pane {
 
     public boolean isGameWon() {
         for (Pile pile : foundationPiles) {
-            if (pile.numOfCards() != 13) {
+            if (pile.numOfCards() != 1) {
                 return false;
             }
         }
@@ -128,10 +129,10 @@ public class Game extends Pane {
         card.setOnMouseDragged(onMouseDraggedHandler);
         card.setOnMouseReleased(onMouseReleasedHandler);
         card.setOnMouseClicked(onMouseClickedHandler);
+
     }
 
     public void refillStockFromDiscard() {
-        //TODO refillStockFromDiscard
         List<Card> cards = discardPile.getCards();
         Collections.reverse(cards);
         for (Card card : cards) {
@@ -144,23 +145,21 @@ public class Game extends Pane {
 
     public boolean isMoveValid(Card card, Pile destPile) {
         if (destPile.getPileType().equals(foundationPiles.get(0).getPileType())) {
-            if (destPile.isEmpty()){
-                    return (card.getRank() == 1);
-            }
-            else
-                return (destPile.getTopCard().getRank() == card.getRank() -1 && destPile.getTopCard().getSuit() == card.getSuit());
+            if (destPile.isEmpty()) {
+                return (card.getRank() == 1);
+            } else
+                return (destPile.getTopCard().getRank() == card.getRank() - 1 && destPile.getTopCard().getSuit() == card.getSuit());
 
-        }
-        else if (destPile.getPileType().equals(tableauPiles.get(0).getPileType())){
+        } else if (destPile.getPileType().equals(tableauPiles.get(0).getPileType())) {
             if (destPile.isEmpty())
                 return (card.getRank() == 13);
 
             else
-                return (destPile.getTopCard().getRank() == card.getRank() +1 && Card.isOppositeColor(destPile.getTopCard(), card));
-            
-            }
-            return false;
+                return (destPile.getTopCard().getRank() == card.getRank() + 1 && Card.isOppositeColor(destPile.getTopCard(), card));
+
         }
+        return false;
+    }
 
 
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
@@ -217,6 +216,20 @@ public class Game extends Pane {
             foundationPile.setLayoutX(610 + i * 180);
             foundationPile.setLayoutY(20);
             foundationPiles.add(foundationPile);
+            foundationPile.getCards().addListener((ListChangeListener<Card>) (e -> {
+                if (isGameWon()) {
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.setContentText("You Have Won !!!");
+                        alert.showAndWait();
+                        System.exit(-1);
+                    });
+                }
+            }));
+
+
             getChildren().add(foundationPile);
         }
         for (int i = 0; i < 7; i++) {
@@ -233,7 +246,6 @@ public class Game extends Pane {
         Collections.shuffle(deck);
         Iterator<Card> deckIterator = deck.iterator();
         Iterator<Pile> tableauIterator = tableauPiles.iterator();
-        //TODO deal card
         int tableauSize = 1;
         while (tableauIterator.hasNext()) {
             Pile tableau = tableauIterator.next();
