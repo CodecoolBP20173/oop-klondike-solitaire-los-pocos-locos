@@ -67,15 +67,23 @@ public class Game extends Pane {
             double offsetY = e.getSceneY() - dragStartY;
 
             draggedCards.clear();
-            draggedCards.add(card);
+            //draggedCards.add(card);
+            List<Card> cards = activePile.getCards();
+            int cardIndex = cards.indexOf(card);
+            for(int i=cardIndex; i < cards.size(); i++){
+                Card item = cards.get(i);
+                draggedCards.add(item);
+                item.getDropShadow().setRadius(20);
+                item.getDropShadow().setOffsetX(10);
+                item.getDropShadow().setOffsetY(10);
 
-            card.getDropShadow().setRadius(20);
-            card.getDropShadow().setOffsetX(10);
-            card.getDropShadow().setOffsetY(10);
+                item.toFront();
+                item.setTranslateX(offsetX);
+                item.setTranslateY(offsetY);
+            }
 
-            card.toFront();
-            card.setTranslateX(offsetX);
-            card.setTranslateY(offsetY);
+
+
         }
     };
 
@@ -85,28 +93,33 @@ public class Game extends Pane {
         Card card = (Card) e.getSource();
         Pile tableauPile = getValidIntersectingPile(card, tableauPiles);
         Pile foundationPile = getValidIntersectingPile(card, foundationPiles);
+
+        //TODO onMouseReleasedHandler
+        int size = draggedCards.size();
         if (foundationPile == null) {
-            moveCard(card, tableauPile);
+            moveCard(card, tableauPile, size);
         } else {
-            moveCard(card, foundationPile);
+            moveCard(card, foundationPile, size);
         }
-
-
     };
 
-    private void moveCard(Card card, Pile pile) {
+    private void moveCard(Card card, Pile pile, int size) {
         if (pile != null) {
             handleValidMove(card, pile);
             List<Card> cards = card.getContainingPile().getCards();
             if (cards.size() > 1) {
-                Card lastNonFlippedCard = cards.get(cards.size() - 2);
+                Card lastNonFlippedCard = cards.get(cards.size() - size-1);
                 if (lastNonFlippedCard.isFaceDown())
                     lastNonFlippedCard.flip();
             }
         } else {
-            draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards.clear();
+            //draggedCards.forEach(MouseUtil::slideBack);
+            for (Card item: draggedCards){
+                MouseUtil.slideBack(item);
+            }
+
         }
+        draggedCards.clear();
     }
 
     public boolean isGameWon() {
@@ -129,10 +142,10 @@ public class Game extends Pane {
         card.setOnMouseDragged(onMouseDraggedHandler);
         card.setOnMouseReleased(onMouseReleasedHandler);
         card.setOnMouseClicked(onMouseClickedHandler);
-
     }
 
     public void refillStockFromDiscard() {
+        //TODO refillStockFromDiscard
         List<Card> cards = discardPile.getCards();
         Collections.reverse(cards);
         for (Card card : cards) {
