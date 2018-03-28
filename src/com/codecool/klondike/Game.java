@@ -40,6 +40,9 @@ public class Game extends Pane {
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
+        if(e.getClickCount() == 2 && card.getContainingPile().getPileType() != Pile.PileType.STOCK && card.getContainingPile().getTopCard() == card){
+            this.findPlace(card);
+        }
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
             card.moveToPile(discardPile);
             card.flip();
@@ -107,7 +110,7 @@ public class Game extends Pane {
         if (pile != null) {
             handleValidMove(card, pile);
             List<Card> cards = card.getContainingPile().getCards();
-            if (cards.size() > 1) {
+            if (cards.size() > 1 && pile.getPileType() != Pile.PileType.DISCARD) {
                 Card lastNonFlippedCard = cards.get(cards.size() - size-1);
                 if (lastNonFlippedCard.isFaceDown())
                     lastNonFlippedCard.flip();
@@ -143,6 +146,7 @@ public class Game extends Pane {
         card.setOnMouseDragged(onMouseDraggedHandler);
         card.setOnMouseReleased(onMouseReleasedHandler);
         card.setOnMouseClicked(onMouseClickedHandler);
+
     }
 
     public void refillStockFromDiscard() {
@@ -291,6 +295,25 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+    private void findPlace(Card card){
+        Iterator<Pile> iterator = foundationPiles.iterator();
+        while (iterator.hasNext()){
+            Pile pile = iterator.next();
+            if(this.isMoveValid(card, pile)) {
+                draggedCards.add(card);
+                handleValidMove(card, pile);
+                List<Card> cards = card.getContainingPile().getCards();
+                if (cards.size() > 1 && pile.getPileType() != Pile.PileType.DISCARD) {
+                    Card lastNonFlippedCard = cards.get(cards.size() - 2);
+                    if (lastNonFlippedCard.isFaceDown())
+                        lastNonFlippedCard.flip();
+                }
+                break;
+            }
+        }
+
     }
 
 }
