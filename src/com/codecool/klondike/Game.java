@@ -167,7 +167,6 @@ public class Game extends Pane {
                 return (card.getRank() == 1);
             } else
                 return (destPile.getTopCard().getRank() == card.getRank() - 1 && destPile.getTopCard().getSuit() == card.getSuit());
-
         } else if (destPile.getPileType().equals(tableauPiles.get(0).getPileType())) {
             if (destPile.isEmpty())
                 return (card.getRank() == 13);
@@ -244,9 +243,15 @@ public class Game extends Pane {
                         alert.setContentText("You Have Won !!!");
                         alert.showAndWait();
                         //removes all cards
-                        //getChildren().remove(13,65);
-                        //System.exit(-1);
-
+                        getChildren().clear();
+                        stockPile.clear();
+                        tableauPiles.clear();
+                        foundationPiles.clear();
+                        discardPile.clear();
+                        //start a new game
+                        deck = Card.createNewDeck();
+                        initPiles();
+                        dealCards();
                     });
                 }
             }));
