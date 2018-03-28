@@ -118,7 +118,7 @@ public class Game extends Pane {
             }
 
         }
-        //draggedCards.clear();
+        draggedCards.clear();
     }
 
     public boolean isGameWon() {
