@@ -110,19 +110,19 @@ public class Game extends Pane {
         if (pile != null) {
             handleValidMove(card, pile);
             List<Card> cards = card.getContainingPile().getCards();
-            if (cards.size() > 1 && pile.getPileType() != Pile.PileType.DISCARD) {
-                Card lastNonFlippedCard = cards.get(cards.size() - size-1);
-                if (lastNonFlippedCard.isFaceDown())
-                    lastNonFlippedCard.flip();
-            }
+            autoFlip(pile, size, cards);
         } else {
-            //draggedCards.forEach(MouseUtil::slideBack);
-            for (Card item: draggedCards){
-                MouseUtil.slideBack(item);
-            }
-
+            draggedCards.forEach(MouseUtil::slideBack);
         }
         draggedCards.clear();
+    }
+
+    private void autoFlip(Pile pile, int size, List<Card> cards) {
+        if (cards.size() > size && pile.getPileType() != Pile.PileType.DISCARD) {
+            Card lastNonFlippedCard = cards.get(cards.size() - size - 1);
+            if (lastNonFlippedCard.isFaceDown())
+                lastNonFlippedCard.flip();
+        }
     }
 
     public boolean isGameWon() {
@@ -245,7 +245,8 @@ public class Game extends Pane {
                         alert.showAndWait();
                         //removes all cards
                         //getChildren().remove(13,65);
-                        System.exit(-1);
+                        //System.exit(-1);
+
                     });
                 }
             }));
@@ -303,13 +304,10 @@ public class Game extends Pane {
             Pile pile = iterator.next();
             if(this.isMoveValid(card, pile)) {
                 draggedCards.add(card);
+                card.toFront();
                 handleValidMove(card, pile);
                 List<Card> cards = card.getContainingPile().getCards();
-                if (cards.size() > 1 && pile.getPileType() != Pile.PileType.DISCARD) {
-                    Card lastNonFlippedCard = cards.get(cards.size() - 2);
-                    if (lastNonFlippedCard.isFaceDown())
-                        lastNonFlippedCard.flip();
-                }
+                autoFlip(pile, 1, cards);
                 break;
             }
         }
