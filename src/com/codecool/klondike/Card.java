@@ -77,9 +77,23 @@ public class Card extends ImageView {
         return "The " + "Rank" + rank + " of " + "Suit" + suit;
     }
 
+    public static String checkColor(Card card) {
+        String cardColor;
+        if (card.getSuit() == 1 || card.getSuit() == 2 ) {
+            cardColor = "RED";
+        }
+        else {
+            cardColor = "BLACK";
+            }
+        return cardColor;
+    }
+
     public static boolean isOppositeColor(Card card1, Card card2) {
-        //TODO
-        return true;
+        if (checkColor(card1).equals(checkColor(card2))) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public static boolean isSameSuit(Card card1, Card card2) {
