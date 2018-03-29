@@ -40,6 +40,9 @@ public class Game extends Pane {
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
+        if(e.getClickCount() == 2 && card.getContainingPile().getPileType() != Pile.PileType.STOCK && card.getContainingPile().getTopCard() == card){
+            this.findPlace(card);
+        }
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
             card.moveToPile(discardPile);
             card.flip();
@@ -107,19 +110,19 @@ public class Game extends Pane {
         if (pile != null) {
             handleValidMove(card, pile);
             List<Card> cards = card.getContainingPile().getCards();
-            if (cards.size() > 1) {
-                Card lastNonFlippedCard = cards.get(cards.size() - size-1);
-                if (lastNonFlippedCard.isFaceDown())
-                    lastNonFlippedCard.flip();
-            }
+            autoFlip(pile, size, cards);
         } else {
-            //draggedCards.forEach(MouseUtil::slideBack);
-            for (Card item: draggedCards){
-                MouseUtil.slideBack(item);
-            }
-
+            draggedCards.forEach(MouseUtil::slideBack);
         }
         draggedCards.clear();
+    }
+
+    private void autoFlip(Pile pile, int size, List<Card> cards) {
+        if (cards.size() > size && pile.getPileType() != Pile.PileType.DISCARD) {
+            Card lastNonFlippedCard = cards.get(cards.size() - size - 1);
+            if (lastNonFlippedCard.isFaceDown())
+                lastNonFlippedCard.flip();
+        }
     }
 
     public boolean isGameWon() {
@@ -143,6 +146,7 @@ public class Game extends Pane {
         card.setOnMouseDragged(onMouseDraggedHandler);
         card.setOnMouseReleased(onMouseReleasedHandler);
         card.setOnMouseClicked(onMouseClickedHandler);
+
     }
 
     public void refillStockFromDiscard() {
@@ -163,7 +167,6 @@ public class Game extends Pane {
                 return (card.getRank() == 1);
             } else
                 return (destPile.getTopCard().getRank() == card.getRank() - 1 && destPile.getTopCard().getSuit() == card.getSuit());
-
         } else if (destPile.getPileType().equals(tableauPiles.get(0).getPileType())) {
             if (destPile.isEmpty())
                 return (card.getRank() == 13);
@@ -240,8 +243,15 @@ public class Game extends Pane {
                         alert.setContentText("You Have Won !!!");
                         alert.showAndWait();
                         //removes all cards
-                        //getChildren().remove(13,65);
-                        System.exit(-1);
+                        getChildren().clear();
+                        stockPile.clear();
+                        tableauPiles.clear();
+                        foundationPiles.clear();
+                        discardPile.clear();
+                        //start a new game
+                        deck = Card.createNewDeck();
+                        initPiles();
+                        dealCards();
                     });
                 }
             }));
@@ -291,6 +301,22 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+    private void findPlace(Card card){
+        Iterator<Pile> iterator = foundationPiles.iterator();
+        while (iterator.hasNext()){
+            Pile pile = iterator.next();
+            if(this.isMoveValid(card, pile)) {
+                draggedCards.add(card);
+                card.toFront();
+                handleValidMove(card, pile);
+                List<Card> cards = card.getContainingPile().getCards();
+                autoFlip(pile, 1, cards);
+                break;
+            }
+        }
+
     }
 
 }
