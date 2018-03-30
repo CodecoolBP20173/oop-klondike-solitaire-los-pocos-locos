@@ -57,8 +57,10 @@ public class MouseUtil {
                         Pile pile = currentCard.getContainingPile();
                         currentCard.moveToPile(destPile);
                         if (pile.getPileType() != Pile.PileType.DISCARD) {
-                            if (pile.getTopCard().isFaceDown() && !pile.isEmpty())
-                                pile.getTopCard().flip();
+                            if (!pile.isEmpty()) {
+                                if (pile.getTopCard().isFaceDown())
+                                    pile.getTopCard().flip();
+                            }
                         }
                         currentCard.getDropShadow().setRadius(2);
                         currentCard.getDropShadow().setOffsetX(0);
